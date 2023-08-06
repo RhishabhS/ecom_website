@@ -4,6 +4,9 @@ import Announcements from '../Announcements'
 import NavBar from './NavBar'
 import Footer from '../Footer'
 import { useEffect } from 'react'
+import { useState } from 'react';
+import { login } from '../redux/apiCalls'
+import { useDispatch, useSelector } from 'react-redux'
 const SuperContainer=styled.div`
     overflow: hidden;
 `
@@ -55,6 +58,10 @@ const Button=styled.button`
     color:white;
     cursor:pointer;
     margin-bottom: 10px;
+    &:disabled{
+        color:green;
+        cursor:not-allowed;
+    }
 `
 const Link=styled.a`
   margin: 5px 0px;
@@ -64,8 +71,16 @@ const Link=styled.a`
 
 
 `
+const Error=styled.span`
+    color:red;
+    font-size: 15px;
+`
 const Login = () => {
     useEffect(()=>window.scrollTo(0,0));
+    const [username,setUsername]=useState("");
+    const [password,setPassword]=useState("");
+    const {isFetching, error}=useSelector((state:any)=>state.user);
+    const dispatch=useDispatch();
   return (
     <SuperContainer>
     <Announcements/>
@@ -76,10 +91,16 @@ const Login = () => {
         <Wrapper>
             <Title>SIGN IN FOR REGISTERED USERS</Title>
             <Form> 
-                <Input placeholder="Username"/>
-                <Input placeholder="Password"/>
+                <Input placeholder="Username" onChange={(e)=>setUsername(e.target.value)}/>
+                <Input placeholder="Password" onChange={(e)=>setPassword(e.target.value)}type='password'/>
             </Form>
-            <Button>LOGIN</Button>
+            <Button onClick={(e)=>{
+                e.preventDefault();
+                login(dispatch,{username,password});
+            }
+            }
+            disabled={isFetching}>LOGIN</Button>
+            {error&&<Error>Something went wrong</Error>}
             <Link>Forgot password?</Link>
             <Link>Create new account</Link>
         </Wrapper>

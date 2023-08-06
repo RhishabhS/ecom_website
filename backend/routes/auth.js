@@ -24,10 +24,9 @@ router.post("/register",async (req,res)=>{
 //for user login
 router.post("/login",async(req,res)=>{
     const loginUser=await(User.findOne({username: req.body.username}));
-    !loginUser&&res.status(401).json("uid not found");
-    const lpass=loginUser.password;
-    if(lpass===null) res.status(401).json("password empty");
-    const pass=CryptoJS.AES.decrypt(lpass, process.env.SECRET).toString(CryptoJS.enc.Utf8);
+    if(loginUser) {
+    const pass=CryptoJS.AES.decrypt(loginUser.password, process.env.SECRET).toString(CryptoJS.enc.Utf8);
+
     // const pass=lpass;
     if (pass!==req.body.password) res.status(401).json("password incorrect");
     else{
@@ -38,6 +37,9 @@ router.post("/login",async(req,res)=>{
         const {password,...others}=loginUser._doc;
         res.status(200).json({...others, accessToken});     
     }
+    }
+    else if(!req.body.password) res.status(401).json("password empty");
+    else res.status(401).json("uid not found");
 })
 
 module.exports=router;

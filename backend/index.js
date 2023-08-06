@@ -16,7 +16,7 @@ mongoose
   .then(() => console.log("db connected successfully"))
   .catch((err) => console.log(err));
 app.use(express.json());
-app.use(express.static());
+app.use(express.static('public'));
 app.use(cors({
   origin:"http://localhost:5173"
 }))
