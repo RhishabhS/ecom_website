@@ -132,6 +132,9 @@ const Cart = () => {
   const [cart,setCart]=useState({...inp});
   console.log("cart",cart);
   console.log('products',cart.products);
+  const handleRemove=(e)=>{
+    
+  }
   return (
     <Container>
       <Announcements />
@@ -169,9 +172,14 @@ const Cart = () => {
               </ProductDetail>
               <PriceDetail>
                 <ProductAmountContainer>
-                  <AddIcon style={{cursor:"pointer"}}/>
+                  <AddIcon style={{cursor:"pointer"}} onClick={()=>setCart({...cart,item: item.quantity+=1,total:cart.total+item.price})}/>
                   <ProductAmount>{item.quantity}</ProductAmount>
-                  <RemoveIcon style={{cursor:"pointer"}}/>   
+                  <RemoveIcon style={{cursor:"pointer"}} onClick={()=>{
+                    setCart({...cart,item:item.quantity>=1?item.quantity-=1:item.quantity,total:item.quantity>=1?cart.total-item.price:cart.total});
+                    if(item.quantity==0){
+                      setCart({...cart,products:cart.products.filter(ele=>ele!=item),total:cart.products.filter(ele=>ele!=item).map(ele=>ele.quantity*ele.price).reduce((accumulator,currentValue)=>accumulator+currentValue,0)})
+                    }
+                  }}/>   
                 </ProductAmountContainer>
                 <ProductPrice>Rs. {item.price}</ProductPrice>
               </PriceDetail>
@@ -184,7 +192,7 @@ const Cart = () => {
             {cart.products.map((item: any) => {
               return <SummaryItem>
                 <SummaryItemText type="">{item.title}  x   {item.quantity}</SummaryItemText>
-                <SummaryItemPrice type=""><CurrencyRupeeIcon style={{fontSize:"20px",}}/>{item.price}</SummaryItemPrice>
+                <SummaryItemPrice type=""><CurrencyRupeeIcon style={{fontSize:"20px",}}/>{item.price*item.quantity}</SummaryItemPrice>
               </SummaryItem>;
             })}
             <SummaryItem>
